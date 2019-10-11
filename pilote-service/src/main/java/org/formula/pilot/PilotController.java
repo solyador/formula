@@ -68,7 +68,7 @@ public class PilotController {
             return new ResponseEntity<Pilot>(HttpStatus.NOT_FOUND);
         }
         pilotService.updatePilot(newPilot, id);
-        return new ResponseEntity<>(newPilot, HttpStatus.OK);    
+        return new ResponseEntity<>(newPilot, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
