@@ -1,4 +1,4 @@
-package org.formula.pilot;
+package org.formula.driver;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class PilotNotFoundAdvice {
+public class DriverNotFoundAdvice {
     
     @ResponseBody
-    @ExceptionHandler(PilotNotFoundException.class)
+    @ExceptionHandler(DriverNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String pilotNotFoundHandler(PilotNotFoundException exception) {
+    String driverNotFoundHandler(DriverNotFoundException exception) {
         return exception.getMessage();
     } 
 }

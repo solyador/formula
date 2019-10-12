@@ -7,6 +7,9 @@ import { MenuBarComponent } from './menu-bar/menu-bar.component';
 import { DriverListComponent } from './driver-list/driver-list.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TeamListComponent } from './team-list/team-list.component';
+import { DriverDetailsComponent } from './driver-details/driver-details.component';
+import { HttpClientModule }    from '@angular/common/http';
+import { TableModule } from 'primeng/table';
 
 
 @NgModule({
@@ -15,11 +18,14 @@ import { TeamListComponent } from './team-list/team-list.component';
     MenuBarComponent,
     DriverListComponent,
     DashboardComponent,
-    TeamListComponent
+    TeamListComponent,
+    DriverDetailsComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
+    TableModule
     ],
   providers: [],
   bootstrap: [AppComponent]

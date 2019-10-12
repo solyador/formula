@@ -1,4 +1,4 @@
-package org.formula.pilot;
+package org.formula.driver;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,13 +12,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Pilot {
+public class Driver {
     private @Id @GeneratedValue Long id;
     private String firstName;
     private String lastName;
+    private String team;
 
-    public Pilot(String firstName, String lastName) {
+    public Driver(String firstName, String lastName, String team) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.team = team;
     }
 }

@@ -18,8 +18,8 @@ import java.util.Optional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.formula.pilot.Pilot;
-import org.formula.pilot.PilotRepository;
+import org.formula.driver.Driver;
+import org.formula.driver.DriverRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,87 +38,90 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class PilotControllerTests {
+public class DriverControllerTests {
 
         private static final ObjectMapper objectMapper = new ObjectMapper();
         @Autowired
         private MockMvc mockMvc;
 
         @MockBean
-        private PilotRepository pilotRepository;
+        private DriverRepository driverRepository;
 
         @Before
         public void setup() {
-                Pilot pilot = new Pilot(1L, "Louis", "Hamilton");
-                when(pilotRepository.findById(1L)).thenReturn(Optional.of(pilot));
+                Driver driver = new Driver(1L, "Louis", "Hamilton", "Mercedes");
+                when(driverRepository.findById(1L)).thenReturn(Optional.of(driver));
         }
 
         @Test
-        public void shouldFindPilot() throws Exception {
-                this.mockMvc.perform(get("/pilots/1")).andExpect(status().isOk())
+        public void shouldFindDriver() throws Exception {
+                this.mockMvc.perform(get("/drivers/1")).andExpect(status().isOk())
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(content()
                                                 .json("{ 'id': 1, 'firstName' : 'Louis', 'lastName' : 'Hamilton' }"));
-                verify(pilotRepository, times(1)).findById(1L);
+                verify(driverRepository, times(1)).findById(1L);
 
         }
 
         @Test
-        public void shoudlFindAllPilots() throws Exception {
+        public void shoudlFindAllDrivers() throws Exception {
 
-                List<Pilot> pilots = Arrays.asList(new Pilot(1L, "Louis", "Hamilton"),
-                                new Pilot(2L, "Sebastien", "Vettel"));
-                when(pilotRepository.findAll()).thenReturn(pilots);
+                List<Driver> drivers = Arrays.asList(new Driver(1L, "Louis", "Hamilton", "Mercedes"),
+                                new Driver(2L, "Sebastien", "Vettel", "Ferrari"));
+                when(driverRepository.findAll()).thenReturn(drivers);
 
-                this.mockMvc.perform(get("/pilots")).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                this.mockMvc.perform(get("/drivers")).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                                 .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(2)))
                                 .andExpect(jsonPath("$[0].id", is(1)))
                                 .andExpect(jsonPath("$[0].firstName", is("Louis")))
                                 .andExpect(jsonPath("$[0].lastName", is("Hamilton")))
+                                .andExpect(jsonPath("$[0].team", is("Mercedes")))
                                 .andExpect(jsonPath("$[1].id", is(2)))
                                 .andExpect(jsonPath("$[1].firstName", is("Sebastien")))
-                                .andExpect(jsonPath("$[1].lastName", is("Vettel")));
+                                .andExpect(jsonPath("$[1].lastName", is("Vettel")))
+                                .andExpect(jsonPath("$[1].team", is("Ferrari")));
 
-                verify(pilotRepository, times(1)).findAll();
+                verify(driverRepository, times(1)).findAll();
 
         }
 
         @Test
-        public void shouldReturn404WhenPilotNotFound() throws Exception {
-                this.mockMvc.perform(get("/pilots/5")).andExpect(status().isNotFound());
+        public void shouldReturn404WhenDriverNotFound() throws Exception {
+                this.mockMvc.perform(get("/drivers/5")).andExpect(status().isNotFound());
         }
 
         @Test
-        public void shouldCreatePilot() throws JsonProcessingException, Exception {
-                Pilot pilot = new Pilot(1L, "Pierre", "Gasly");
-                when(this.pilotRepository.save(any(Pilot.class))).thenReturn(pilot);
-                this.mockMvc.perform(post("/pilots").content(objectMapper.writeValueAsString(pilot))
+        public void shouldCreateDriver() throws JsonProcessingException, Exception {
+                Driver driver = new Driver(1L, "Pierre", "Gasly", "Torro Rosso");
+                when(this.driverRepository.save(any(Driver.class))).thenReturn(driver);
+                this.mockMvc.perform(post("/drivers").content(objectMapper.writeValueAsString(driver))
                                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
                                 .andExpect(status().isCreated())
                                 .andExpect(jsonPath("$.id", is(1)))
                                 .andExpect(jsonPath("$.firstName", is("Pierre")))
                                 .andExpect(jsonPath("$.lastName", is("Gasly")))
-                                ;
+                                .andExpect(jsonPath("$.team", is("Torro Rosso")));
         }
 
         @Test
-        public void shouldUpdatePilot() throws Exception {
-                Pilot updatePilot = new Pilot(1L, "Louis", "Hamilton");
-                when(this.pilotRepository.save(any(Pilot.class))).thenReturn(updatePilot);
-                this.mockMvc.perform(put("/pilots/1")
-                                .content(objectMapper.writeValueAsString(updatePilot))
+        public void shouldUpdateDriver() throws Exception {
+                Driver updateDriver = new Driver(1L, "Louis", "Hamilton", "Mercedes");
+                when(this.driverRepository.save(any(Driver.class))).thenReturn(updateDriver);
+                this.mockMvc.perform(put("/drivers/1")
+                                .content(objectMapper.writeValueAsString(updateDriver))
                                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
                                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                                 .andExpect(status().isOk())
                                 .andDo(MockMvcResultHandlers.print())
                                 .andExpect(jsonPath("$.id", is(1)))
                                 .andExpect(jsonPath("$.firstName", is("Louis")))
-                                .andExpect(jsonPath("$.lastName", is("Hamilton")));
+                                .andExpect(jsonPath("$.lastName", is("Hamilton")))
+                                .andExpect(jsonPath("$.team", is("Mercedes")));
         }
 
         @Test
-        public void shouldDeletePilot() throws Exception {
-                doNothing().when(this.pilotRepository).deleteById(1L);
-                this.mockMvc.perform(delete("/pilots/1")).andExpect(status().isOk());
-                verify(this.pilotRepository, times(1)).deleteById(1L);
+        public void shouldDeleteDriver() throws Exception {
+                doNothing().when(this.driverRepository).deleteById(1L);
+                this.mockMvc.perform(delete("/drivers/1")).andExpect(status().isOk());
+                verify(this.driverRepository, times(1)).deleteById(1L);
         }
 }

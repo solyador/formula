@@ -9,7 +9,7 @@
     <relativePath/>
   </parent>
   <groupId>org.formula</groupId>
-  <artifactId>pilot-service</artifactId>
+  <artifactId>driver-service</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>demo</name>
   <description>Demo project for Spring Boot</description>
