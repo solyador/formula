@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -71,5 +72,12 @@ public class RaceController {
         }
         raceService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/results/season/{season}/week/{week}")
+    public ResponseEntity<List<Race>> getResults(@PathVariable Integer season, @PathVariable Integer week) {
+        List<Race> race = raceService.simulateRace(season, week);
+        raceService.updateStandings(season, race);
+        return new ResponseEntity<>(race, HttpStatus.OK);
     }
 }

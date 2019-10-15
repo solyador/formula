@@ -9,4 +9,6 @@ public interface IStandingService {
     public void deleteById(Long id);
     public void updateStanding(Standing newStanding, Long id);
     public boolean exists(Standing standing);
+
+    Standing findBySeasonAndDriver(Integer season, Integer driver);
 }

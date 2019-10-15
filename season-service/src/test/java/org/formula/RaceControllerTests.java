@@ -3,6 +3,10 @@ package org.formula;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.formula.race.Race;
 import org.formula.race.RaceRepository;
+import org.formula.season.Season;
+import org.formula.season.SeasonRepository;
+import org.formula.standing.Standing;
+import org.formula.standing.StandingRepository;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -44,6 +48,12 @@ public class RaceControllerTests {
     @MockBean
     private RaceRepository raceRepository;
 
+    @MockBean
+    private StandingRepository standingRepository;
+
+    @MockBean
+    private SeasonRepository seasonRepository;
+
     @Before
     public void setup() {
         Race race = new Race(1L, 1, 1,1, 1, 1);
@@ -66,8 +76,10 @@ public class RaceControllerTests {
                                          new Race(2L, 2, 2, 2, 2, 2));
         when(raceRepository.findAll()).thenReturn(races);
 
-        this.mockMvc.perform(get("/races")).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(2)))
+        this.mockMvc.perform(get("/races"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", is(1)))
                 .andExpect(jsonPath("$[0].driver", is(1)))
                 .andExpect(jsonPath("$[0].position", is(1)))
@@ -128,6 +140,26 @@ public class RaceControllerTests {
         doNothing().when(this.raceRepository).deleteById(1L);
         this.mockMvc.perform(delete("/races/1")).andExpect(status().isOk());
         verify(this.raceRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void shouldReturnResult() throws Exception {
+        Season currentSeason = RaceControllerTestHelper.getCurrentSeason();
+        List<Standing> standings = RaceControllerTestHelper.getStandings();
+        List<Race> race = RaceControllerTestHelper.getRace();
+
+        when(this.standingRepository.findAllBySeason(currentSeason.getId().intValue())).thenReturn(standings);
+        when(this.raceRepository.findAllBySeasonAndWeek(currentSeason.getId().intValue(), currentSeason.getRace())).thenReturn(race);
+        when(this.standingRepository.findBySeasonAndDriver(1, 1)).thenReturn(standings.get(0));
+        when(this.standingRepository.findBySeasonAndDriver(1, 2)).thenReturn(standings.get(1));
+        when(this.standingRepository.findBySeasonAndDriver(1, 3)).thenReturn(standings.get(2));
+        this.mockMvc.perform(get("/races/results/season/1/week/2"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)));
+               /* .andExpect(jsonPath("$[0].score", is(1)))
+                .andExpect(jsonPath("$[1].score", is(2)))
+                .andExpect(jsonPath("$[2].score", is(1)));*/
     }
 
 }
