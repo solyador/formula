@@ -44,10 +44,9 @@ public class RaceService implements IRaceService {
     @Override
     public void updateRace(Race newRace, Long id) {
         raceRepository.findById(id).map(item -> {
-            item.setDriver(newRace.getDriver());
-            item.setPosition(newRace.getPosition());
             item.setSeason(newRace.getSeason());
             item.setWeek(newRace.getWeek());
+            item.setDriver(newRace.getDriver());
             item.setScore(newRace.getScore());
             raceRepository.save(item);
             return null;

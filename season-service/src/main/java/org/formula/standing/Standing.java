@@ -14,15 +14,13 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class Standing {
     private @Id @GeneratedValue Long id;
-    private Integer driver;
     private Integer season;
-    private Integer position;
+    private Integer driver;
     private Integer points;
 
-    public Standing(Integer driver, Integer season, Integer position, Integer points) {
-        this.driver = driver;
+    public Standing(Integer season, Integer driver, Integer points) {
         this.season = season;
-        this.position = position;
+        this.driver = driver;
         this.points = points;
     }
 }

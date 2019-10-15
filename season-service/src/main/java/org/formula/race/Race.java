@@ -15,16 +15,14 @@ import javax.persistence.Id;
 public class Race {
     private @Id @GeneratedValue Long id;
     private Integer driver;
-    private Integer position;
     private Integer season;
     private Integer week;
     private Integer score;
 
-    public Race(Integer driver, Integer position, Integer season, Integer week, Integer score) {
-        this.driver = driver;
-        this.position = position;
+    public Race(Integer season, Integer week, Integer driver, Integer score) {
         this.season = season;
         this.week = week;
+        this.driver = driver;
         this.score = score;
     }
 }

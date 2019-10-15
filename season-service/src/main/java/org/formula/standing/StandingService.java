@@ -37,7 +37,6 @@ public class StandingService implements IStandingService {
         standingRepository.findById(id).map(item -> {
             item.setDriver(newStanding.getDriver());
             item.setSeason(newStanding.getSeason());
-            item.setPosition(newStanding.getPosition());
             item.setPoints(newStanding.getPoints());
             standingRepository.save(item);
             return null;

@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.formula.season.Season;
 import org.formula.season.SeasonRepository;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,14 +23,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
-
-
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class SeasonControllerTests {
+public class SeasonControllerIntegrationTests {
 
     private Season firstSeason;
     private Season secondSeason;
@@ -73,12 +68,6 @@ public class SeasonControllerTests {
                 .andExpect(jsonPath("$[1].race", is(10)))
                 .andExpect(jsonPath("$[2].id", is(thirdSeason.getId().intValue())))
                 .andExpect(jsonPath("$[2].race", is(20)));
-    }
-
-    @Ignore
-    @Test
-    public void should_return_404_when_season_not_found() throws Exception {
-        this.mockMvc.perform(get("/seasons/5")).andExpect(status().isNotFound());
     }
 
     @Test

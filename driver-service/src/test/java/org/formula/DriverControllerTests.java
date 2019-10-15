@@ -1,27 +1,26 @@
 package org.formula;
 
+import static java.lang.Boolean.FALSE;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.contains;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.util.List;
-import java.util.Arrays;
-import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.formula.driver.Driver;
+import org.formula.driver.DriverNotFoundException;
 import org.formula.driver.DriverRepository;
 import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,7 +31,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -40,88 +38,76 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 @ActiveProfiles("test")
 public class DriverControllerTests {
 
-        private static final ObjectMapper objectMapper = new ObjectMapper();
+        private Driver firstDriver;
+        private Driver secondDriver;
+        private Driver thirdDriver;
+
+        @Autowired
+        private ObjectMapper objectMapper;
+
         @Autowired
         private MockMvc mockMvc;
 
-        @MockBean
-        private DriverRepository driverRepository;
+        @Autowired
+        DriverRepository driverRepository;
+
+        @Rule
+        public ExpectedException thrown = ExpectedException.none();
 
         @Before
         public void setup() {
-                Driver driver = new Driver(1L, "Louis", "Hamilton", "Mercedes");
-                when(driverRepository.findById(1L)).thenReturn(Optional.of(driver));
+                driverRepository.deleteAll();
+                firstDriver = driverRepository.save(new Driver("Louis", "Hamilton", "Mercedes"));
+                secondDriver = driverRepository.save(new Driver("Sebastien", "Vettel", "Ferrari"));
+                thirdDriver = driverRepository.save(new Driver("Charles", "Leclerc", "Ferrari"));
         }
-
         @Test
-        public void shouldFindDriver() throws Exception {
-                this.mockMvc.perform(get("/drivers/1")).andExpect(status().isOk())
-                                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8)).andExpect(content()
-                                                .json("{ 'id': 1, 'firstName' : 'Louis', 'lastName' : 'Hamilton' }"));
-                verify(driverRepository, times(1)).findById(1L);
-
-        }
-
-        @Test
-        public void shoudlFindAllDrivers() throws Exception {
-
-                List<Driver> drivers = Arrays.asList(new Driver(1L, "Louis", "Hamilton", "Mercedes"),
-                                new Driver(2L, "Sebastien", "Vettel", "Ferrari"));
-                when(driverRepository.findAll()).thenReturn(drivers);
-
-                this.mockMvc.perform(get("/drivers")).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                                .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(2)))
-                                .andExpect(jsonPath("$[0].id", is(1)))
-                                .andExpect(jsonPath("$[0].firstName", is("Louis")))
-                                .andExpect(jsonPath("$[0].lastName", is("Hamilton")))
-                                .andExpect(jsonPath("$[0].team", is("Mercedes")))
-                                .andExpect(jsonPath("$[1].id", is(2)))
-                                .andExpect(jsonPath("$[1].firstName", is("Sebastien")))
-                                .andExpect(jsonPath("$[1].lastName", is("Vettel")))
-                                .andExpect(jsonPath("$[1].team", is("Ferrari")));
-
-                verify(driverRepository, times(1)).findAll();
+        public void should_return_a_driver() throws Exception {
+                this.mockMvc.perform(get("/drivers/" + firstDriver.getId())).andExpect(status().isOk())
+                        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                        .andExpect(jsonPath("$.firstName", is("Louis")))
+                        .andExpect(jsonPath("$.lastName", is("Hamilton")))
+                        .andExpect(jsonPath("$.team", is("Mercedes")));
 
         }
 
         @Test
-        public void shouldReturn404WhenDriverNotFound() throws Exception {
-                this.mockMvc.perform(get("/drivers/5")).andExpect(status().isNotFound());
+        public void should_return_all_drivers() throws Exception {
+                this.mockMvc.perform(get("/drivers"))
+                        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                        .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(3)))
+                        .andExpect(jsonPath("$[0].id", is(firstDriver.getId().intValue())))
+                        .andExpect(jsonPath("$[0].firstName", is("Louis")))
+                        .andExpect(jsonPath("$[1].id", is(secondDriver.getId().intValue())))
+                        .andExpect(jsonPath("$[1].firstName", is("Sebastien")))
+                        .andExpect(jsonPath("$[2].id", is(thirdDriver.getId().intValue())))
+                        .andExpect(jsonPath("$[2].firstName", is("Charles")));
         }
 
         @Test
-        public void shouldCreateDriver() throws JsonProcessingException, Exception {
-                Driver driver = new Driver(1L, "Pierre", "Gasly", "Torro Rosso");
-                when(this.driverRepository.save(any(Driver.class))).thenReturn(driver);
+        public void should_create_driver() throws Exception {
+                Driver driver = new Driver("Valteri", "Bottas", "Mercedes");
                 this.mockMvc.perform(post("/drivers").content(objectMapper.writeValueAsString(driver))
-                                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
-                                .andExpect(status().isCreated())
-                                .andExpect(jsonPath("$.id", is(1)))
-                                .andExpect(jsonPath("$.firstName", is("Pierre")))
-                                .andExpect(jsonPath("$.lastName", is("Gasly")))
-                                .andExpect(jsonPath("$.team", is("Torro Rosso")));
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+                        .andExpect(status().isCreated())
+                        .andExpect(jsonPath("$.firstName", is("Valteri")));
         }
 
         @Test
-        public void shouldUpdateDriver() throws Exception {
-                Driver updateDriver = new Driver(1L, "Louis", "Hamilton", "Mercedes");
-                when(this.driverRepository.save(any(Driver.class))).thenReturn(updateDriver);
-                this.mockMvc.perform(put("/drivers/1")
-                                .content(objectMapper.writeValueAsString(updateDriver))
-                                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
-                                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                                .andExpect(status().isOk())
-                                .andDo(MockMvcResultHandlers.print())
-                                .andExpect(jsonPath("$.id", is(1)))
-                                .andExpect(jsonPath("$.firstName", is("Louis")))
-                                .andExpect(jsonPath("$.lastName", is("Hamilton")))
-                                .andExpect(jsonPath("$.team", is("Mercedes")));
+        public void should_update_driver() throws Exception {
+                firstDriver.setFirstName("Michel");
+                this.mockMvc.perform(put("/drivers/" + firstDriver.getId())
+                        .content(objectMapper.writeValueAsString(firstDriver))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+                        .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id", is(firstDriver.getId().intValue())))
+                        .andExpect(jsonPath("$.firstName", is("Michel")));
         }
 
         @Test
-        public void shouldDeleteDriver() throws Exception {
-                doNothing().when(this.driverRepository).deleteById(1L);
-                this.mockMvc.perform(delete("/drivers/1")).andExpect(status().isOk());
-                verify(this.driverRepository, times(1)).deleteById(1L);
+        public void should_delete_driver() throws Exception {
+                this.mockMvc.perform(delete("/drivers/" + firstDriver.getId())).andExpect(status().isOk());
+                assertThat(driverRepository.findById(firstDriver.getId()).isPresent()).isEqualTo(FALSE);
         }
 }
