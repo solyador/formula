@@ -4,10 +4,10 @@ import java.util.List;
 
 public interface IDriverService {
 
-    public List<Driver> findAll();
-    public Driver save(Driver driver);
-    public Driver findById(Long id);
-    public void deleteById(Long id);
-    public void updateDriver(Driver newDriver, Long id);
-	public boolean exists(Driver driver);
+    List<Driver> findAll();
+    Driver save(Driver driver);
+    Driver findById(Long id);
+    void deleteById(Long id);
+    void updateDriver(Driver newDriver, Long id);
+    boolean exists(Driver driver);
 }

@@ -1,6 +1,6 @@
 package org.formula.season;
 
-public class SeasonNotFoundException extends RuntimeException {
+class SeasonNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 

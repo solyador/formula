@@ -54,12 +54,6 @@ public class RaceService implements IRaceService {
     }
 
     @Override
-    public boolean exists(Race race) {
-        Race searchedRace = raceRepository.findById(race.getId()).get();
-        return searchedRace != null;
-    }
-
-    @Override
     public List<Race> simulateRace(Integer season, Integer week) {
         List<Race> race = raceRepository.findAllBySeasonAndWeek(season, week);
         race.forEach(item -> {
@@ -72,9 +66,9 @@ public class RaceService implements IRaceService {
 
     @Override
     public void updateStandings(Integer season, List<Race> race) {
-            List<Integer> points = Arrays.asList(25, 18, 12);
-            List<Race> scoringDrivers = race.subList(0, 3);
-            for (int i = 0; i < 3; i++) {
+            List<Integer> points = Arrays.asList(25, 18, 15, 12, 10, 8, 6, 4, 2, 1);
+            List<Race> scoringDrivers = race.subList(0, 9);
+            for (int i = 0; i < 10; i++) {
                 Integer driver = scoringDrivers.get(i).getDriver();
                 Standing standing = this.standingService.findBySeasonAndDriver(season, driver);
                 standing.setPoints(standing.getPoints() + points.get(i));

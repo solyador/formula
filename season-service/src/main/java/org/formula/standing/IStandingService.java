@@ -3,12 +3,11 @@ package org.formula.standing;
 import java.util.List;
 
 public interface IStandingService {
-    public List<Standing> findAll();
-    public Standing save(Standing standing);
-    public Standing findById(Long id);
-    public void deleteById(Long id);
-    public void updateStanding(Standing newStanding, Long id);
-    public boolean exists(Standing standing);
+    List<Standing> findAll();
+    Standing save(Standing standing);
+    Standing findById(Long id);
+    void deleteById(Long id);
+    void updateStanding(Standing newStanding, Long id);
 
     Standing findBySeasonAndDriver(Integer season, Integer driver);
 }

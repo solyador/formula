@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -26,12 +25,12 @@ public class SeasonController {
             LOG.info("no seasons found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<List<Season>>(seasons, HttpStatus.OK);
+        return new ResponseEntity<>(seasons, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getSeason(@PathVariable Long id) {
-        LOG.info("getting season ", id);
+        LOG.info("getting season with id {}", id);
         Season season = seasonService.findById(id);
         if (season == null) {
             LOG.info("season with id {} not found", id);
@@ -42,17 +41,12 @@ public class SeasonController {
 
     @PostMapping
     public ResponseEntity<?> addSeason(@RequestBody Season season) {
-       /*
-        LOG.info("adding new season ", season);
-        if (seasonService.exists(season)) {
-            return new ResponseEntity<Void>(HttpStatus.CONFLICT);
-        }*/
         return new ResponseEntity<>(seasonService.save(season), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateSeason(@PathVariable Long id, @RequestBody Season newSeason) {
-        LOG.info("updating season ", newSeason);
+        LOG.info("updating season number {}", newSeason);
         Season currentSeason = seasonService.findById(id);
         if (currentSeason == null) {
             LOG.info("Season with id {} not found", id);
@@ -64,7 +58,7 @@ public class SeasonController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSeason(@PathVariable Long id) {
-        LOG.info("deleting season ", id);
+        LOG.info("deleting season number {}", id);
         Season season = seasonService.findById(id);
         if (season == null) {
             LOG.info("Season with id {} not found", id);

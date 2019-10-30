@@ -8,7 +8,6 @@ public interface IRaceService {
     Race findById(Long id);
     void deleteById(Long id);
     void updateRace(Race newRace, Long id);
-    boolean exists(Race race);
 
     List<Race> simulateRace(Integer season, Integer week);
 

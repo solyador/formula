@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/drivers")
@@ -34,12 +33,12 @@ public class DriverController {
             LOG.info("no drivers found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<List<Driver>>(drivers, HttpStatus.OK);
+        return new ResponseEntity<>(drivers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getDriver(@PathVariable Long id) {
-        LOG.info("getting driver ", id);
+        LOG.info("getting driver with id {}", id);
         Driver driver = driverService.findById(id);
         if (driver == null) {
             LOG.info("driver with id {} not found", id);
@@ -49,8 +48,8 @@ public class DriverController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addDriver(@RequestBody Driver driver, UriComponentsBuilder ucBuilder) {
-        LOG.info("adding new driver ", driver);
+    public ResponseEntity<?> addDriver(@RequestBody Driver driver) {
+        LOG.info("adding new driver with id {}", driver);
         if (driverService.exists(driver)) {
             LOG.info("a driver with name " + driver.getFirstName() + " " + driver.getLastName() + " already exists");
             return new ResponseEntity<Void>(HttpStatus.CONFLICT);
@@ -60,7 +59,7 @@ public class DriverController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateDriver(@PathVariable Long id, @RequestBody Driver newDriver) {
-        LOG.info("updating driver ", newDriver);
+        LOG.info("updating driver with id {}", newDriver);
         Driver currentDriver = driverService.findById(id);
         if (currentDriver == null) {
             LOG.info("Driver with id {} not found", id);
@@ -72,7 +71,7 @@ public class DriverController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteDriver(@PathVariable Long id) {
-        LOG.info("deleting driver ", id);
+        LOG.info("deleting driver with id {}", id);
         Driver driver = driverService.findById(id);
         if (driver == null) {
             LOG.info("Driver with id {} not found", id);

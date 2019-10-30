@@ -1,6 +1,6 @@
 package org.formula.race;
 
-public class RaceNotFoundException extends RuntimeException {
+class RaceNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 

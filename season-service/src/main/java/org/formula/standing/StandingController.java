@@ -25,12 +25,12 @@ public class StandingController {
             LOG.info("no standings found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<List<Standing>>(standings, HttpStatus.OK);
+        return new ResponseEntity<>(standings, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getStanding(@PathVariable Long id) {
-        LOG.info("getting standing ", id);
+        LOG.info("getting standing with id {}", id);
         Standing standing = standingService.findById(id);
         if (standing == null) {
             LOG.info("standing with id {} not found", id);
@@ -41,17 +41,12 @@ public class StandingController {
 
     @PostMapping
     public ResponseEntity<?> addStanding(@RequestBody Standing standing) {
-       /*
-        LOG.info("adding new standing ", standing);
-        if (standingService.exists(standing)) {
-            return new ResponseEntity<Void>(HttpStatus.CONFLICT);
-        }*/
         return new ResponseEntity<>(standingService.save(standing), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateStanding(@PathVariable Long id, @RequestBody Standing newStanding) {
-        LOG.info("updating standing ", newStanding);
+        LOG.info("updating standing with id {}", newStanding);
         Standing currentStanding = standingService.findById(id);
         if (currentStanding == null) {
             LOG.info("Standing with id {} not found", id);
@@ -63,7 +58,7 @@ public class StandingController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteStanding(@PathVariable Long id) {
-        LOG.info("deleting standing ", id);
+        LOG.info("deleting standing with id {}", id);
         Standing standing = standingService.findById(id);
         if (standing == null) {
             LOG.info("Standing with id {} not found", id);

@@ -40,10 +40,4 @@ public class SeasonService implements ISeasonService {
             return null;
         });
     }
-
-    @Override
-    public boolean exists(Season season) {
-        Season searchedSeason = seasonRepository.findById(season.getId()).get();
-        return searchedSeason != null;
-    }
 }

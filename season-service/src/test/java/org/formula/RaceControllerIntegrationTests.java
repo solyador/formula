@@ -123,7 +123,7 @@ public class RaceControllerIntegrationTests {
         this.mockMvc.perform(get("/races/results/season/"+ currentSeason.getId() + "/week/4"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$", hasSize(10)))
                 .andExpect(jsonPath("$[0].score", is(both(greaterThan(4000)).and(lessThan(7258)))))
                 .andExpect(jsonPath("$[1].score", is(both(greaterThan(4000)).and(lessThan(7258)))))
                 .andExpect(jsonPath("$[2].score", is(both(greaterThan(4000)).and(lessThan(7258)))));

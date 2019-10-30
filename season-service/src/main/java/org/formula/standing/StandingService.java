@@ -44,12 +44,6 @@ public class StandingService implements IStandingService {
     }
 
     @Override
-    public boolean exists(Standing standing) {
-        Standing searchedStanding = standingRepository.findById(standing.getId()).get();
-        return searchedStanding != null;
-    }
-
-    @Override
     public Standing findBySeasonAndDriver(Integer season, Integer driver) {
         return standingRepository.findBySeasonAndDriver(season, driver);
     }
